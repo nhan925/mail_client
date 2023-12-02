@@ -1,0 +1,20 @@
+{
+  "username": "newmail@new.com",
+  "password": "12345678",
+  "smtp_server": "127.0.0.1",
+  "smtp_port": 25,
+  "pop3_server": "127.0.0.1",
+  "pop3_port": 110,
+  "auto_load_time": 10,
+  "filter": {
+    "Spam": {
+      "filter_by": "content",
+      "filters": [
+        "virus",
+        "hack",
+        "crack"
+      ],
+      "filter_dir": "/spam"
+    }
+  }
+}

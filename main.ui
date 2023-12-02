@@ -29,9 +29,6 @@
    <iconset>
     <normaloff>icon/email.png</normaloff>icon/email.png</iconset>
   </property>
-  <property name="dockOptions">
-   <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
-  </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>false</bool>
   </property>

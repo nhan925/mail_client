@@ -2,13 +2,29 @@ import socket
 import base64
 from PyQt6 import QtWidgets, uic
 from PyQt6.QtWidgets import *
-import sys
 import os
+import data
+from datetime import datetime
 
-def send_email(smtp_server, smtp_port, smtp_username, recipient_email, subject, body, attachment_paths, cc_email, bcc_email):
+
+def generate_unique_name():
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    unique_name = f"{timestamp}"
+    return unique_name
+
+
+def save_sent_mail(msg):
+    with open(data.sent_dir + '/' + generate_unique_name() + '.msg', 'w') as sent_mes:
+        sent_mes.write(msg)
+        sent_mes.close()
+
+
+# Send email with collected data
+def send_mail(smtp_server, smtp_port, smtp_username, recipient_email, subject, body, attachment_paths, cc_email, bcc_email):
     recipients = str(recipient_email).replace("'", "").removeprefix('[').removesuffix(']')
     cc_recipients = str(cc_email).replace("'", "").removeprefix('[').removesuffix(']')
-    # Construct the MIME message manually
+
+    # Construct MIME message
     message = f"""\
 From: {smtp_username}
 To: {recipients}
@@ -18,6 +34,7 @@ To: {recipients}
         recipient_email = recipient_email + cc_email
     if bcc_email[0] != '':
         recipient_email = recipient_email + bcc_email
+
     continue_mes = f"""\
 Subject: {subject}
 MIME-Version: 1.0
@@ -37,8 +54,8 @@ Content-Transfer-Encoding: 7bit
         with open(attachment_path, 'rb') as attachment_file:
             attachment_data = attachment_file.read()
             attachment_base64 = base64.b64encode(attachment_data).decode('utf-8')
-            attachment_name = os.path.basename(attachment_path) # Extract the file name
-            attachment_content_type = 'application/octet-stream'  # Binary content type
+            attachment_name = os.path.basename(attachment_path)
+            attachment_content_type = 'application/octet-stream'
             attachment_part = f"""\
 --dGhpc19pc190aGVfc2VwYXJhdGVkX3N0cmluZw==
 Content-Type: {attachment_content_type}
@@ -48,11 +65,10 @@ Content-Transfer-Encoding: base64
 
 """
 
-            # Split the base64 data into lines with a maximum line length
-            max_line_length = 8192  # RFC 2045 suggests a maximum line length of 76 characters
+            # Split base64 data into lines
+            max_line_length = 8192
             for i in range(0, len(attachment_base64), max_line_length):
                 line = attachment_base64[i:i + max_line_length]
-                # Escape lines starting with a dot
                 if line.startswith('.'):
                     line = '.' + line
                 attachment_part += line + '\r\n'
@@ -61,42 +77,39 @@ Content-Transfer-Encoding: base64
 
     message += '--dGhpc19pc190aGVfc2VwYXJhdGVkX3N0cmluZw==--'
 
-    # Connect to the SMTP server manually
+    # Send mail to server
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
         server.connect((smtp_server, smtp_port))
-
-        # Receive the server's greeting
         server.recv(1024)
 
-        # Send EHLO
+        # EHLO
         server.sendall(f'EHLO {socket.gethostname()}\r\n'.encode('utf-8'))
         server.recv(1024)
 
-        # Send MAIL FROM
+        # MAIL FROM
         server.sendall(f'MAIL FROM: <{smtp_username}>\r\n'.encode('utf-8'))
         server.recv(1024)
 
-        # Send RCPT TO
+        # RCPT TO
         for _to in recipient_email:
             server.sendall(f'RCPT TO: <{_to}>\r\n'.encode('utf-8'))
             server.recv(1024)
 
-        # Send DATA
+        # DATA
         server.sendall(f'DATA\r\n'.encode('utf-8'))
         server.recv(1024)
-
-        # Send the email message
         server.sendall(message.encode('utf-8'))
-
-        # Send end of data marker
         server.sendall(f'\r\n.\r\n'.encode('utf-8'))
         server.recv(1024)
 
-        # Send QUIT
+        # QUIT
         server.sendall(f'QUIT\r\n'.encode('utf-8'))
         server.recv(1024)
 
-#new_mail.ui
+    #Save sent message
+    save_sent_mail(message)
+
+# new_mail.ui
 class NewMail(QDialog):
     def __init__(self):
         super(NewMail, self).__init__()
@@ -107,6 +120,7 @@ class NewMail(QDialog):
 
     attached_files = []
     file_size_limit = 3 #in MB
+
     def _attach(self):
         choose_file = QFileDialog()
         success = choose_file.exec()
@@ -131,24 +145,28 @@ class NewMail(QDialog):
         try:
             receiver = self.to.text()
             at_idx = receiver.find('@')
-            if receiver == '' or at_idx == 0 or receiver[at_idx + 1] == '':
+            if receiver == '' or at_idx == 0 or at_idx == -1 or receiver[at_idx + 1] == '':
                 QMessageBox.information(self, 'Mes', 'Fail !')
                 return
             receiver_list = receiver.split(',')
             receiver_list = [tok.strip() for tok in receiver_list]
+
             cc = self.cc.text()
             cc_list = cc.split(',')
             cc_list = [tok.strip() for tok in cc_list]
+
             bcc = self.bcc.text()
             bcc_list = bcc.split(',')
             bcc_list = [tok.strip() for tok in bcc_list]
+
             sub = self.subject.text()
             cont = self.content.toPlainText()
             attachments = self.attached_files
-            send_email(
-                smtp_server='127.0.0.1',
-                smtp_port=25,
-                smtp_username='newmail@new.com',
+
+            send_mail(
+                smtp_server=data.smtp_server,
+                smtp_port=data.smtp_port,
+                smtp_username=data.username,
                 recipient_email=receiver_list,
                 subject=sub,
                 body=cont,
@@ -157,24 +175,10 @@ class NewMail(QDialog):
                 bcc_email=bcc_list
             )
             QMessageBox.information(self, 'Mes', 'Email sent successfully !')
-            self.to.clear()
-            self.cc.clear()
-            self.bcc.clear()
-            self.subject.clear()
-            self.content.clear()
-            self.attachments.clear()
-            self.attached_files.clear()
+            self.close()
         except:
             QMessageBox.information(self, 'Mes', 'Fail !')
 
     def _clear_att(self):
         self.attached_files.clear()
         self.attachments.clear()
-
-
-app = QApplication(sys.argv)
-widget = QtWidgets.QStackedWidget()
-newmail_f = NewMail()
-widget.addWidget(newmail_f)
-widget.show()
-app.exec()

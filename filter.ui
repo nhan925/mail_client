@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>448</width>
+    <width>533</width>
     <height>94</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>448</width>
+    <width>533</width>
     <height>94</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>448</width>
+    <width>533</width>
     <height>94</height>
    </size>
   </property>
@@ -123,6 +123,19 @@
    </property>
    <property name="text">
     <string>(Separated with &quot;,&quot;)</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>440</x>
+     <y>20</y>
+     <width>75</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Add</string>
    </property>
   </widget>
  </widget>
