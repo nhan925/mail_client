@@ -135,6 +135,14 @@ class NewMail(QDialog):
                     QMessageBox.StandardButton.Ok
                 )
                 return
+            if (attachment_size == 0):
+                QMessageBox.warning(
+                    None,
+                    "Empty File",
+                    f"The file '{os.path.basename(selectedfile)}' is empty. Please choose another file !",
+                    QMessageBox.StandardButton.Ok
+                )
+                return
             self.attached_files.append(selectedfile)
             selectedfile = os.path.basename(selectedfile)
             if self.attachments.text():

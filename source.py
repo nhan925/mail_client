@@ -1,6 +1,5 @@
 import data
 import main
-import new_mail
 import setup
 from PyQt6.QtWidgets import *
 import sys

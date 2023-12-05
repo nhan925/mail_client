@@ -43,4 +43,3 @@ def export_config():
     with open('config.json', 'w') as config_file:
         json.dump(dat, config_file, indent=2)
         config_file.close()
-

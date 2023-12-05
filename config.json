@@ -1,6 +1,6 @@
 {
   "username": "newmail@new.com",
-  "password": "12345678",
+  "password": "123456",
   "smtp_server": "127.0.0.1",
   "smtp_port": 25,
   "pop3_server": "127.0.0.1",
@@ -8,13 +8,38 @@
   "auto_load_time": 10,
   "filter": {
     "Spam": {
-      "filter_by": "content",
-      "filters": [
+      "filter_by": "subject",
+      "keywords": [
         "virus",
         "hack",
         "crack"
       ],
-      "filter_dir": "/spam"
+      "filter_dir": "spam"
+    },
+    "Spam1": {
+      "filter_by": "content",
+      "keywords": [
+        "virus",
+        "hack",
+        "crack"
+      ],
+      "filter_dir": "spam"
+    },
+    "Work": {
+      "filter_by": "content",
+      "keywords": [
+        "report",
+        "meeting"
+      ],
+      "filter_dir": "work"
+    },
+    "Important": {
+      "filter_by": "subject",
+      "keywords": [
+        "urgent",
+        "ASAP"
+      ],
+      "filter_dir": "important"
     }
   }
 }

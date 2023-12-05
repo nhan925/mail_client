@@ -2,7 +2,6 @@ import socket
 import base64
 import json
 import os, shutil
-import data
 
 def D3_receive_data(sock,s_condition=b'\r\n'):
     data = b""
@@ -45,7 +44,7 @@ def D3_save_list(data,filename):
     #write .json
     file_path = os.path.join(mail_folder, filename)
     with open(file_path,'w') as json_file:
-        json_file.write(json.dumps(data))
+        json.dump(data, json_file, indent=2)
 
     """with open(file_path,'r') as json_file:
         data = json.loads(json_file.read())
@@ -54,7 +53,7 @@ def D3_save_list(data,filename):
 
 def D3_read_json_file(file_path):
     with open(file_path,'r') as json_file:
-        data=json.loads(json_file.read())
+        data=json.load(json_file)
     return data
 
 def D3_compare_UIDL(data_1):
@@ -94,32 +93,12 @@ def D3_compare_UIDL(data_1):
         else :
             return line.split()[1][1:-1]"""
 
-
-def D1_filter_mail(filters, email_info):
-    check = False
-    for i in filters:
-        filter_field = None
-        if filters[i]['filter_by'] == "subject":
-            filter_field = email_info['Headers']['Subject']
-        elif filters[i]['filter_by'] == "content":
-            filter_field = email_info['Text']
-        else:
-            filter_field = email_info['Headers']['From']
-
-        for j in filters[i]['keywords']:
-            check = j in filter_field
-            if (check == True):
-                return filters[i]['filter_dir']
-    return data.inbox_dir
-
-
-def D3_save_mails(email_info, data_mail, mes_id, filters):
-    dir = D1_filter_mail(filters, email_info)
-    if not os.path.exists(dir):
-        os.makedirs(dir)
+def D3_save_mails(data_mail,mes_id):
+    if not os.path.exists(save_to_folder):
+        os.makedirs(save_to_folder)
     #write file.msg
-    file_path=os.path.join(dir,f"{mes_id}.msg")
-    with open(file_path, 'w') as msg_file:
+    file_path=os.path.join(save_to_folder,f"mess_{mes_id}.msg")
+    with open(file_path,'w') as msg_file:
         msg_file.write(data_mail)
 
     """with open(file_path,'r') as msg_file:
@@ -129,10 +108,21 @@ def D3_save_mails(email_info, data_mail, mes_id, filters):
 def D3_extract(str_1,str_2,part):
     if str_1 in part:
         return part.split(str_1,1)[1].split(str_2,1)[0].strip('"')
-    else: return ' '
-def D3_extract_headers(headers,string):
+    else:
+        return ' '
+def D3_extract_headers(headers):
     data={}
-    str_2=string
+    """data['From']=headers.split('From: ')[1].split('\r\n',1)[0]
+    if 'To: ' in headers:
+        data['To']=headers.split('To: ')[1].split('\r\n',1)[0]
+    else : data['To']=" "
+    if 'Cc: ' in headers:
+        data['Cc']=headers.split('Cc: ')[1].split('\r\n',1)[0]
+    else: data['Cc']=" "
+    if 'Subject' in headers:
+        data['Subject']=headers.split('Cc: ')[1].split('\r\n',1)[0]
+    else: data['Subject']=" " """
+    str_2="\r\n"
     data['From']=D3_extract("From: ",str_2,headers)
     data['To']=D3_extract("To: ",str_2,headers)
     data['Cc']=D3_extract("Cc: ",str_2,headers)
@@ -140,26 +130,27 @@ def D3_extract_headers(headers,string):
     data['Boundary']=D3_extract("Content-Type: multipart/mixed; boundary=",str_2,headers)
     return data
 
-def D3_extract_body(parts,boundary,string):
-    content=" "
+def D3_extract_body(parts,boundary):
+    list_text=[]
     list_attachments=[]
     for part in parts[1:-1]:
         if "Content-Disposition: attachment" in part:
             attachment={
                 'Content-Type': D3_extract('Content-Type: ',";",part),
-                'filename':D3_extract("filename=",string,part),
-                'content':D3_extract(string+string,string+string,part).encode('utf-8')
+                'filename':D3_extract("filename=","\r\n",part),
+                'content':D3_extract("\r\n\r\n","\r\n\r\n",part).encode('utf-8')
             }
             list_attachments.append(attachment)
         else:
-            content=D3_extract(string+string,"--"+boundary,part).strip(string+string)
-    return content,list_attachments
+            content=D3_extract("\r\n\r\n","--"+boundary,part).strip("\r\n\r\n")
+            list_text.append(content)
+    return list_text,list_attachments
 
-def D3_parse_mime_email(raw_email,string):
+def D3_parse_mime_email(raw_email):
     email_info={}
     # Parsing email into head and bodys
-    headers, body = raw_email.split(string+string, 1)
-    email_info['Headers']= D3_extract_headers(headers,string)
+    headers, body = raw_email.split('\r\n\r\n', 1)
+    email_info['Headers']= D3_extract_headers(headers)
 
     boundary= email_info['Headers']['Boundary']
     if boundary!= " ":
@@ -172,24 +163,25 @@ def D3_parse_mime_email(raw_email,string):
         lines=parts[1].split("\r\n")
         for i in range(0,len(lines)):
             print(i,lines[i],sep="---",end="\r\n")"""
-        email_info['Text'],email_info['Attachments'] = D3_extract_body(parts,boundary,string)
+        email_info['Text'],email_info['Attachments'] = D3_extract_body(parts,boundary)
     else:
-        email_info['Text']= body
+        list_text=[]
+        list_text.append(body)
+        email_info['Text']= list_text
         email_info['Attachments']=[]
     return email_info
 
 
-def D3_save_attachments(list_attachments, mes_id):
+def D3_save_attachments(list_attachments):
     if not os.path.exists(file_attachments):
         os.makedirs(file_attachments)
     for attachment in list_attachments:
-        filename = mes_id + '_' + attachment['filename']
-        file_path = os.path.join(file_attachments, filename)
-        #if os.path.exists(file_path): return
-        with open(file_path, 'wb') as file:
-            _dat=attachment['content'].replace(b'\r\n',b' ')
+        filename = attachment['filename']
+        #file_path = os.path.join(file_attachments, filename)
+        """with open(file_attachments + '/' + filename, 'wb') as file:
+            _dat=attachment['content'].replace(b'\r\n', b'')
             decoded_dat = base64.b64decode(_dat)
-            file.write(decoded_dat)
+            file.write(decoded_dat)"""
 
 
 def D3_delete_on_client(mes_id):
@@ -220,18 +212,17 @@ def D3_delete_on_server(sock,remove_mails):
 
 def D3_fetch_mail(sock,add_mails):
     # Read raw mail
-    for key, value in add_mails.items():
+    for key in add_mails:
         raw_email = D3_send_command(sock, f"RETR {key}",b'\r\n.\r\n').decode('utf-8')
         #print(raw_email)
-        email_info=D3_parse_mime_email(raw_email,"\r\n")
-        if email_info['Attachments'] !=[]:
-            D3_save_attachments(email_info['Attachments'], value[0:-4])
-        D3_save_mails(email_info, raw_email, value[0:-4], data.filters)
+        email_info=D3_parse_mime_email(raw_email)
+        if email_info['Attachments'] != []:
+            D3_save_attachments(email_info['Attachments'])
+        D3_save_mails(raw_email, add_mails[key][0:-4])
 
 
 def D3_reload_mails(pop3_server,pop3_port,username,password):
-    with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as sock:
-        sock.connect((pop3_server,pop3_port))
+    with socket.create_connection((pop3_server,pop3_port)) as sock:
         D3_receive_data(sock)
         D3_send_command(sock,"CAPA")
         D3_send_command(sock,f"USER {username}")
@@ -250,36 +241,29 @@ def D3_reload_mails(pop3_server,pop3_port,username,password):
         #UIDL: get a list of unique identifiers assigned by the server to each message
         list_UIDL = D3_send_command(sock,"UIDL").decode('utf-8')
         data_1 = D3_list_to_dict(list_UIDL)
-        add_mails = {}
+        add_mails={}
         remove_mails={}
-
-        """D3_delete_on_client(20231203001421330)
-        D3_delete_on_client(20231202214856204)"""
+        #D3_delete_on_client(20231203001421330)
+        #D3_delete_on_client(20231202214856204)
         if not os.path.exists(mail_folder+"//uidl_list.json"):
             add_mails=data_1
         else:
             add_mails,remove_mails=D3_compare_UIDL(data_1)
 
-        #D3_delete_on_server(sock,remove_mails)
+        D3_delete_on_server(sock,remove_mails)
         D3_save_list(data_1, "uidl_list.json")#update fie_uidl
         D3_fetch_mail(sock,add_mails)
 
-        #raw_mail=D3_send_command(sock,"RETR 15",b'\r\n.\r\n').decode('utf-8')
+        """"#raw_mail=D3_send_command(sock,"RETR 15",b'\r\n.\r\n').decode('utf-8')
         raw_data=" "
-        # thay doi cai ma ngay dong duoi thanh ma mail bat ki trong may roi test nha
-        """with open(save_to_folder+"//mess_20231204230258134.msg",'r')as file:
+        with open(save_to_folder+"//mess_20231204213644283.msg",'r')as file:
             raw_data=file.read()
         #print(raw_data)
-        raw_data=raw_data.split("\n\n",1)[1].split(".\n\n\n\n")[0]
-        print(raw_data)
-        file_path=os.path.join(save_to_folder+"test.msg")
-        with open(file_path,'w') as file:
-            file.write(raw_data)
-        with open(file_path,'r') as file:
-            _data=file.read()
+        lines=raw_data.split("\r\n")
+        print(lines)
         for line in lines:
             print("dong",line,sep="----",end="\n\n")
-        email_info=D3_parse_mime_email(_data,"\n\n")
+        email_info=D3_parse_mime_email(raw_data)
         #D3_save_attachments(email_info['Attachments'])
         print(email_info)"""
 
@@ -288,14 +272,14 @@ def D3_reload_mails(pop3_server,pop3_port,username,password):
 
 if __name__ == "__main__":
     pop3_server = "127.0.0.1"
-    pop3_port = 110
+    pop3_port="110"
     username = "newmail@new.com"
     password = "123456"
-    save_to_folder = "debug/mailbox"
-    file_attachments = "debug/file_attachments"
-    mail_folder = "debug/client_socket"
+    save_to_folder="debug/mailbox"
+    file_attachments="debug/file_attachments"
+    mail_folder="debug/client_socket"
 
-data.import_config()
+
 D3_reload_mails(pop3_server,pop3_port,username, password)
 
 
