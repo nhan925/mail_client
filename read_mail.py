@@ -3,6 +3,20 @@ import base64
 import json
 import os, shutil
 import data
+from PyQt6 import QtWidgets, uic
+from PyQt6.QtWidgets import *
+import sys
+
+save_to_folder = "debug/mailbox"
+# duong dan den mailbox la data.inbox_dir
+
+class ReadMail(QDialog):
+    def __init__(self):
+        super(ReadMail, self).__init__()
+        uic.loadUi('read_mail.ui', self)
+
+
+
 
 def D3_receive_data(sock,s_condition=b'\r\n'):
     data = b""
@@ -40,11 +54,8 @@ def D3_list_to_dict(list_mails):
     return data
 
 def D3_save_list(data,filename):
-    if not os.path.exists(mail_folder):
-        os.makedirs(mail_folder)
     #write .json
-    file_path = os.path.join(mail_folder, filename)
-    with open(file_path,'w') as json_file:
+    with open(filename,'w') as json_file:
         json_file.write(json.dumps(data))
 
     """with open(file_path,'r') as json_file:
@@ -58,7 +69,7 @@ def D3_read_json_file(file_path):
     return data
 
 def D3_compare_UIDL(data_1):
-    file_path=mail_folder+"//uidl_list.json"
+    file_path="uidl_list.json"
     data = D3_read_json_file(file_path)
     add_mails={}
     remove_mails={}
@@ -73,7 +84,7 @@ def D3_compare_UIDL(data_1):
             else:
                 continue
         else:
-            if os.path.exists(mail_folder+f"//Bin//mess_{value[0:-4]}.msg"):
+            if os.path.exists(f"Bin//mess_{value[0:-4]}.msg"):
                 remove_mails.update({key:value})
             else:
                 add_mails.update({key:value})
@@ -180,11 +191,11 @@ def D3_parse_mime_email(raw_email,string):
 
 
 def D3_save_attachments(list_attachments, mes_id):
-    if not os.path.exists(file_attachments):
-        os.makedirs(file_attachments)
+    if not os.path.exists(data.files_dir):
+        os.makedirs(data.files_dir)
     for attachment in list_attachments:
         filename = mes_id + '_' + attachment['filename']
-        file_path = os.path.join(file_attachments, filename)
+        file_path = os.path.join(data.files_dir, filename)
         #if os.path.exists(file_path): return
         with open(file_path, 'wb') as file:
             _dat=attachment['content'].replace(b'\r\n',b' ')
@@ -194,7 +205,7 @@ def D3_save_attachments(list_attachments, mes_id):
 
 def D3_delete_on_client(mes_id):
     #Move mes_<id>.msg
-    Bin=mail_folder+"//Bin"
+    Bin="Bin"
     if not os.path.exists(Bin):
         os.makedirs(Bin)
     source=save_to_folder+f"//mess_{mes_id}.msg"
@@ -202,7 +213,7 @@ def D3_delete_on_client(mes_id):
     if not os.path.exists(Bin+f"//mess_{mes_id}.msg"):
         dest=shutil.move(source,destination)
     #update uidl_list
-    path_uidl=mail_folder+"//uidl_list.json"
+    path_uidl="uidl_list.json"
     data={}
     with open(path_uidl,'r') as file:
         data=json.loads(file.read())
@@ -245,7 +256,7 @@ def D3_reload_mails(pop3_server,pop3_port,username,password):
         #list_mails=map(str,D3_send_command(sock,'LIST').split(b'\r\n')[1:-2])
         list_mails_bytes = D3_send_command(sock,"LIST").decode('utf-8')
         data = D3_list_to_dict(list_mails_bytes)
-        D3_save_list(data,"List_bytes.json")
+        D3_save_list(data,"list_bytes.json")
 
         #UIDL: get a list of unique identifiers assigned by the server to each message
         list_UIDL = D3_send_command(sock,"UIDL").decode('utf-8')
@@ -255,7 +266,7 @@ def D3_reload_mails(pop3_server,pop3_port,username,password):
 
         """D3_delete_on_client(20231203001421330)
         D3_delete_on_client(20231202214856204)"""
-        if not os.path.exists(mail_folder+"//uidl_list.json"):
+        if not os.path.exists("uidl_list.json"):
             add_mails=data_1
         else:
             add_mails,remove_mails=D3_compare_UIDL(data_1)
@@ -285,18 +296,10 @@ def D3_reload_mails(pop3_server,pop3_port,username,password):
 
 
 
-
-if __name__ == "__main__":
-    pop3_server = "127.0.0.1"
-    pop3_port = 110
-    username = "newmail@new.com"
-    password = "123456"
-    save_to_folder = "debug/mailbox"
-    file_attachments = "debug/file_attachments"
-    mail_folder = "debug/client_socket"
-
-data.import_config()
-D3_reload_mails(pop3_server,pop3_port,username, password)
+"""app = QApplication(sys.argv)
+read_mail = ReadMail()
+read_mail.show()
+app.exec()"""
 
 
 

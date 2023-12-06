@@ -55,6 +55,12 @@
            <normaloff>icon/reload.png</normaloff>
            <normalon>icon/spam.png</normalon>icon/reload.png</iconset>
          </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
         </widget>
        </item>
        <item>
@@ -92,6 +98,12 @@
          <bold>true</bold>
         </font>
        </property>
+       <property name="mouseTracking">
+        <bool>false</bool>
+       </property>
+       <property name="acceptDrops">
+        <bool>false</bool>
+       </property>
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
        </property>
@@ -103,9 +115,15 @@
          <normaloff>icon/email (1).png</normaloff>icon/email (1).png</iconset>
        </property>
        <property name="checkable">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="checked">
+        <bool>false</bool>
+       </property>
+       <property name="autoRepeat">
+        <bool>false</bool>
+       </property>
+       <property name="autoExclusive">
         <bool>false</bool>
        </property>
        <property name="default">
@@ -138,7 +156,7 @@
          <normaloff>icon/paper-plane.png</normaloff>icon/paper-plane.png</iconset>
        </property>
        <property name="checkable">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="default">
         <bool>false</bool>
@@ -170,7 +188,7 @@
          <normaloff>icon/spam.png</normaloff>icon/spam.png</iconset>
        </property>
        <property name="checkable">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="default">
         <bool>false</bool>
@@ -205,7 +223,7 @@
          <normaloff>icon/trash-bin.png</normaloff>icon/trash-bin.png</iconset>
        </property>
        <property name="checkable">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="default">
         <bool>false</bool>
@@ -247,7 +265,7 @@
          <normaloff>icon/folder.png</normaloff>icon/folder.png</iconset>
        </property>
        <property name="checkable">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="default">
         <bool>false</bool>

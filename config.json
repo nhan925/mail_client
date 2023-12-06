@@ -24,22 +24,6 @@
         "crack"
       ],
       "filter_dir": "spam"
-    },
-    "Work": {
-      "filter_by": "content",
-      "keywords": [
-        "report",
-        "meeting"
-      ],
-      "filter_dir": "work"
-    },
-    "Important": {
-      "filter_by": "subject",
-      "keywords": [
-        "urgent",
-        "ASAP"
-      ],
-      "filter_dir": "important"
     }
   }
 }
