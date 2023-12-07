@@ -5,23 +5,48 @@ import os, shutil
 import data
 from PyQt6 import QtWidgets, uic
 from PyQt6.QtWidgets import *
+from PyQt6.QtGui import QDesktopServices
+from PyQt6.QtCore import QUrl
 import sys
 
 save_to_folder = "debug/mailbox"
 # duong dan den mailbox la data.inbox_dir
 
+display_info = {}
+current_mail_id = ''
+
+
 class ReadMail(QDialog):
     def __init__(self):
         super(ReadMail, self).__init__()
         uic.loadUi('read_mail.ui', self)
+        self.fromwho.setText(display_info['Headers']['From'])
+        self.to.setText(display_info['Headers']['To'])
+        self.cc.setText(display_info['Headers']['Cc'])
+        self.subject.setText(display_info['Headers']['Subject'])
+        self.content.setText(display_info['Text'])
+        for file in display_info['Attachments']:
+            item = QListWidgetItem(file['filename'])
+            item.setData(1, current_mail_id + '_' + file['filename'])
+            self.attachments.addItem(item)
+        self.attachments.itemDoubleClicked.connect(self.doubleclick_attachments)
+        self.closewindows.clicked.connect(self.close)
+        self.openfolder.clicked.connect(self.openfolder_func)
 
+
+    def doubleclick_attachments(self, item):
+        QDesktopServices.openUrl(QUrl.fromLocalFile(f"{data.files_dir}/{item.data(1)}"))
+
+
+    def openfolder_func(self):
+        QDesktopServices.openUrl(QUrl.fromLocalFile(data.files_dir))
 
 
 
 def D3_receive_data(sock,s_condition=b'\r\n'):
     data = b""
     while True:
-        chunk = sock.recv(1024)
+        chunk = sock.recv(8192)
         if not chunk:
             break
         data += chunk
@@ -242,7 +267,10 @@ def D3_fetch_mail(sock,add_mails):
 
 def D3_reload_mails(pop3_server,pop3_port,username,password):
     with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as sock:
-        sock.connect((pop3_server,pop3_port))
+        try:
+            sock.connect((pop3_server,pop3_port))
+        except:
+            return
         D3_receive_data(sock)
         D3_send_command(sock,"CAPA")
         D3_send_command(sock,f"USER {username}")

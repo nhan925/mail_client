@@ -6,24 +6,28 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>811</width>
-    <height>676</height>
+    <width>803</width>
+    <height>640</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>811</width>
-    <height>676</height>
+    <width>803</width>
+    <height>640</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>811</width>
-    <height>676</height>
+    <width>803</width>
+    <height>640</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Read Mail</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>icon/receive_2.png</normaloff>icon/receive_2.png</iconset>
   </property>
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
@@ -31,7 +35,7 @@
      <x>20</x>
      <y>10</y>
      <width>761</width>
-     <height>91</height>
+     <height>111</height>
     </rect>
    </property>
    <property name="title">
@@ -59,7 +63,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>40</y>
+      <y>60</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -73,7 +77,7 @@
      <string>CC:</string>
     </property>
    </widget>
-   <widget class="QLabel" name="from">
+   <widget class="QLabel" name="fromwho">
     <property name="geometry">
      <rect>
       <x>70</x>
@@ -90,7 +94,7 @@
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>40</y>
+      <y>60</y>
       <width>681</width>
       <height>16</height>
      </rect>
@@ -103,7 +107,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>60</y>
+      <y>80</y>
       <width>51</width>
       <height>16</height>
      </rect>
@@ -121,7 +125,38 @@
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>60</y>
+      <y>80</y>
+      <width>681</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>31</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>To:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="to">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>40</y>
       <width>681</width>
       <height>16</height>
      </rect>
@@ -135,9 +170,9 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>110</y>
+     <y>130</y>
      <width>761</width>
-     <height>381</height>
+     <height>333</height>
     </rect>
    </property>
    <property name="title">
@@ -149,8 +184,13 @@
       <x>10</x>
       <y>20</y>
       <width>741</width>
-      <height>351</height>
+      <height>301</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+     </font>
     </property>
    </widget>
   </widget>
@@ -158,7 +198,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>500</y>
+     <y>470</y>
      <width>681</width>
      <height>101</height>
     </rect>
@@ -184,8 +224,8 @@
    <property name="geometry">
     <rect>
      <x>710</x>
-     <y>507</y>
-     <width>81</width>
+     <y>477</y>
+     <width>73</width>
      <height>94</height>
     </rect>
    </property>
@@ -194,12 +234,12 @@
 Folders</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="close">
+  <widget class="QPushButton" name="closewindows">
    <property name="geometry">
     <rect>
      <x>220</x>
-     <y>610</y>
-     <width>571</width>
+     <y>582</y>
+     <width>563</width>
      <height>41</height>
     </rect>
    </property>
@@ -214,9 +254,9 @@ Folders</string>
   <widget class="QPushButton" name="delete_2">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>610</y>
-     <width>191</width>
+     <x>19</x>
+     <y>582</y>
+     <width>196</width>
      <height>41</height>
     </rect>
    </property>
