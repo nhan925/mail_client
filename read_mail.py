@@ -35,7 +35,10 @@ class ReadMail(QDialog):
 
 
     def doubleclick_attachments(self, item):
-        QDesktopServices.openUrl(QUrl.fromLocalFile(f"{data.files_dir}/{item.data(1)}"))
+        if os.path.exists(f"{data.files_dir}/{item.data(1)}"):
+            QDesktopServices.openUrl(QUrl.fromLocalFile(f"{data.files_dir}/{item.data(1)}"))
+        else:
+            QMessageBox.information(self, 'Error', 'File has been deleted !')
 
 
     def openfolder_func(self):
@@ -267,6 +270,7 @@ def D3_fetch_mail(sock,add_mails):
 
 def D3_reload_mails(pop3_server,pop3_port,username,password):
     with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as sock:
+        sock.settimeout(1)
         try:
             sock.connect((pop3_server,pop3_port))
         except:

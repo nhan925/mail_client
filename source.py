@@ -14,3 +14,4 @@ else:
 startup.show()
 app.exec()
 data.export_config()
+

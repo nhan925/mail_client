@@ -301,6 +301,12 @@
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
       </widget>
      </item>
     </layout>

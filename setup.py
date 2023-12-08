@@ -21,6 +21,7 @@ class Setup(QDialog):
         pop3_p = int(self.portin.text())
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(3)
             s.connect((smtp_sv, smtp_p))
             rcv = s.recv(1024).decode("utf8")
             msg = 'EHLO ' + '[' + smtp_sv + ']\r\n'
@@ -31,6 +32,7 @@ class Setup(QDialog):
             s.close()
 
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(3)
             s.connect((pop3_sv, pop3_p))
             rcv = s.recv(1024).decode("utf8")
             msg = 'CAPA\r\n'

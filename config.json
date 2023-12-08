@@ -7,7 +7,7 @@
   "pop3_port": 110,
   "auto_load_time": 10,
   "filter": {
-    "Spam": {
+    "spam": {
       "filter_by": "subject",
       "keywords": [
         "virus",
@@ -16,7 +16,7 @@
       ],
       "filter_dir": "spam"
     },
-    "Spam1": {
+    "spam1": {
       "filter_by": "content",
       "keywords": [
         "virus",

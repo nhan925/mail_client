@@ -29,7 +29,7 @@
    <iconset>
     <normaloff>icon/filtering.png</normaloff>icon/filtering.png</iconset>
   </property>
-  <widget class="QComboBox" name="comboBox">
+  <widget class="QComboBox" name="by">
    <property name="geometry">
     <rect>
      <x>80</x>
@@ -56,7 +56,7 @@
    </item>
    <item>
     <property name="text">
-     <string>Keyword</string>
+     <string>Content</string>
     </property>
    </item>
   </widget>
@@ -96,7 +96,7 @@
     <string>Input:</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QLineEdit" name="keyword">
    <property name="geometry">
     <rect>
      <x>80</x>
@@ -125,7 +125,7 @@
     <string>(Separated with &quot;,&quot;)</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="addbutton">
    <property name="geometry">
     <rect>
      <x>320</x>
@@ -138,7 +138,7 @@
     <string>Add</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit_2">
+  <widget class="QLineEdit" name="filtername">
    <property name="geometry">
     <rect>
      <x>80</x>

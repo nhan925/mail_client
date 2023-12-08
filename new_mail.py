@@ -79,6 +79,7 @@ Content-Transfer-Encoding: base64
 
     # Send mail to server
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
+        server.settimeout(2)
         server.connect((smtp_server, smtp_port))
         server.recv(1024)
 
