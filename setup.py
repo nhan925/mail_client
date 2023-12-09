@@ -1,10 +1,11 @@
-from PyQt6 import QtCore, QtWidgets, QtGui, uic
+from PyQt6 import uic
 from PyQt6.QtWidgets import *
 import socket
 import data
 import main
 
-#setup.ui
+
+# setup.ui
 class Setup(QDialog):
     def __init__(self):
         super(Setup, self).__init__()

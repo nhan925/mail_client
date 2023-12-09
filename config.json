@@ -24,6 +24,14 @@
         "crack"
       ],
       "filter_dir": "spam"
+    },
+    "work": {
+      "filter_by": "content",
+      "keywords": [
+        "meeting",
+        "report"
+      ],
+      "filter_dir": "work"
     }
   }
 }

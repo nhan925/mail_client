@@ -1,4 +1,6 @@
 import json
+import os
+import read_mail
 
 username = ''
 password = ''
@@ -13,6 +15,7 @@ spam_dir = 'spam'
 trash_dir = 'trash'
 filters = {}
 files_dir = 'downloaded_files'
+mail_status = {}
 
 
 def import_config():
@@ -43,3 +46,16 @@ def export_config():
     with open('config.json', 'w') as config_file:
         json.dump(dat, config_file, indent=2)
         config_file.close()
+
+
+def uidl_list_export():
+    global mail_status
+    with open('uidl_list.json', 'w') as file:
+        json.dump(mail_status, file, indent=2)
+        file.close()
+
+
+def uidl_list_import():
+    global mail_status
+    if os.path.exists("uidl_list.json"):
+        mail_status = read_mail.D3_read_json_file("uidl_list.json")

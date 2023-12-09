@@ -1,6 +1,6 @@
 import socket
 import base64
-from PyQt6 import QtWidgets, uic
+from PyQt6 import uic
 from PyQt6.QtWidgets import *
 import os
 import data
@@ -15,12 +15,13 @@ def generate_unique_name():
 
 def save_sent_mail(msg):
     with open(data.sent_dir + '/' + generate_unique_name() + '.msg', 'w') as sent_mes:
-        sent_mes.write(msg)
+        sent_mes.write(msg.replace('\n', '\n\n'))
         sent_mes.close()
 
 
 # Send email with collected data
-def send_mail(smtp_server, smtp_port, smtp_username, recipient_email, subject, body, attachment_paths, cc_email, bcc_email):
+def send_mail(smtp_server, smtp_port, smtp_username, recipient_email, subject, body, attachment_paths, cc_email,
+              bcc_email):
     recipients = str(recipient_email).replace("'", "").removeprefix('[').removesuffix(']')
     cc_recipients = str(cc_email).replace("'", "").removeprefix('[').removesuffix(']')
 
@@ -74,6 +75,7 @@ Content-Transfer-Encoding: base64
                 attachment_part += line + '\r\n'
 
             message += attachment_part
+            attachment_file.close()
 
     message += '--dGhpc19pc190aGVfc2VwYXJhdGVkX3N0cmluZw==--'
 
@@ -107,8 +109,9 @@ Content-Transfer-Encoding: base64
         server.sendall(f'QUIT\r\n'.encode('utf-8'))
         server.recv(1024)
 
-    #Save sent message
+    # Save sent message
     save_sent_mail(message)
+
 
 # new_mail.ui
 class NewMail(QDialog):
@@ -120,7 +123,7 @@ class NewMail(QDialog):
         self.clear.clicked.connect(self._clear_att)
 
     attached_files = []
-    file_size_limit = 3 #in MB
+    file_size_limit = 3  # in MB
 
     def _attach(self):
         choose_file = QFileDialog()
@@ -148,7 +151,8 @@ class NewMail(QDialog):
             selectedfile = os.path.basename(selectedfile)
             if self.attachments.text():
                 selectedfile = ", " + selectedfile
-            self.attachments.setText(self.attachments.text() + selectedfile + ' (' + str(round(attachment_size/1024, 3)) + ' KB)')
+            self.attachments.setText(
+                self.attachments.text() + selectedfile + ' (' + str(round(attachment_size / 1024, 3)) + ' KB)')
 
     def _send(self):
         try:
