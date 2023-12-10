@@ -13,6 +13,6 @@ else:
     startup = main.Main()
 startup.show()
 app.exec()
-if data.check_reset == 0:
+if data.check_reset == 0 and data.username != '':
     data.export_config()
     data.uidl_list_export()

@@ -116,20 +116,29 @@ Content-Transfer-Encoding: base64
 # new_mail.ui
 class NewMail(QDialog):
     def __init__(self):
+        self.attached_files = []
+        self.file_size_limit = 3  # in MB
         super(NewMail, self).__init__()
         uic.loadUi('new_mail.ui', self)
         self.attach.clicked.connect(self._attach)
         self.send.clicked.connect(self._send)
         self.clear.clicked.connect(self._clear_att)
 
-    attached_files = []
-    file_size_limit = 3  # in MB
+
 
     def _attach(self):
         choose_file = QFileDialog()
         success = choose_file.exec()
         if success:
             selectedfile = QFileDialog.selectedFiles(choose_file)[0]
+            if selectedfile in self.attached_files:
+                QMessageBox.warning(
+                    None,
+                    "Duplicate File",
+                    f"The file is already attached !",
+                    QMessageBox.StandardButton.Ok
+                )
+                return
             attachment_size = os.path.getsize(selectedfile)
             if (attachment_size > self.file_size_limit * 1024 * 1024):
                 QMessageBox.warning(

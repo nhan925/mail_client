@@ -83,8 +83,7 @@ class Main(QMainWindow):
             subject = _data['Headers']['Subject']
             item = QListWidgetItem(f"{sender}\n{subject}")
             item.setData(1, key)
-            if self.current_folder != data.sent_dir and self.current_folder != data.trash_dir and \
-                    data.mail_status[read_mail.D3_status_index(key, data.mail_status)]['status'] == 'unread':
+            if self.current_folder != data.sent_dir and self.current_folder != data.trash_dir and data.mail_status[read_mail.D3_status_index(key, data.mail_status)]['status'] == 'unread':
                 item.setFont(QFont('Segoe UI', 10, QFont.Weight.Bold))
             self.contentlist.addItem(item)
 

@@ -103,10 +103,9 @@ def D3_read_json_file(file_path):
 
 def D3_compare_UIDL(data_1):
     file_path = "uidl_list.json"
-    _data = D3_read_json_file(file_path)
     add_mails = {}
     remove_mails = {}
-    list_key = list(_data.keys())
+    list_key = list(data.mail_status.keys())
     if len(list_key) != 0:
         last_key = list_key[-1]
     else:
@@ -124,15 +123,11 @@ def D3_compare_UIDL(data_1):
                 add_mails.update({key: value})
     if remove_mails != {} or add_mails != {}:
         if remove_mails != {}:
-            _data.update(add_mails)
-            a = list(f'{i}' for i in range(1, len(_data) + 1, 1))
-            _data = dict(zip(a, list(_data.values())))
+            data.mail_status.update(add_mails)
+            a = list(f'{i}' for i in range(1, len(data.mail_status) + 1, 1))
+            data.mail_status = dict(zip(a, list(data.mail_status.values())))
         else:
-            _data.update(add_mails)
-        data.mail_status = _data
-        with open(file_path, 'w') as file:
-            json.dump(_data, file, indent=2)
-            file.close()
+            data.mail_status.update(add_mails)
     return add_mails, remove_mails
 
 
@@ -231,25 +226,14 @@ def D3_save_attachments(list_attachments, mes_id):
 
 def D3_delete_on_client(mes_id, current_folder):
     # Move mes_<id>.msg
-    bin = data.trash_dir
-    source = f"{current_folder}/{mes_id}.msg"
-    destination = bin
-    if not os.path.exists(bin + f"/{mes_id}.msg"):
-        dest = shutil.move(source, destination)
+    if not os.path.exists(f"{data.trash_dir}/{mes_id}.msg"):
+        dest = shutil.move(f"{current_folder}/{mes_id}.msg", data.trash_dir)
     # update uidl_list
-    path_uidl = "uidl_list.json"
-    _data = {}
-    with open(path_uidl, 'r') as file:
-        _data = json.loads(file.read())
-        file.close()
-    for key, value in _data.items():
+    for key, value in data.mail_status.items():
         if value['uidl'] == f"{mes_id}.msg":
             key_remove = key
-    del _data[str(key_remove)]
-    data.mail_status = _data
-    with open(path_uidl, 'w') as file:
-        file.write(json.dumps(_data))
-        file.close()
+            break
+    del data.mail_status[str(key_remove)]
 
 
 # if delete on interface user call this function
@@ -310,5 +294,5 @@ def D3_reload_mails(pop3_server, pop3_port, username, password):
 
 def D3_status_index(email_uidl, data):
     for key, value in data.items():
-        if (value['uidl'] == email_uidl + ".msg"):
+        if value['uidl'] == email_uidl + ".msg":
             return str(key)
