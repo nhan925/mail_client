@@ -106,9 +106,6 @@ def D3_compare_UIDL(data_1):
     _data = D3_read_json_file(file_path)
     add_mails = {}
     remove_mails = {}
-    # test
-    # print(_data,"\n\n")
-    print(len(_data), len(data_1), sep="-")
     list_key = list(_data.keys())
     if len(list_key) != 0:
         last_key = list_key[-1]
@@ -134,7 +131,7 @@ def D3_compare_UIDL(data_1):
             _data.update(add_mails)
         data.mail_status = _data
         with open(file_path, 'w') as file:
-            file.write(json.dumps(_data))
+            json.dump(_data, file, indent=2)
             file.close()
     return add_mails, remove_mails
 
@@ -265,7 +262,6 @@ def D3_fetch_mail(sock, add_mails):
     # Read raw mail
     for key, value in add_mails.items():
         raw_email = D3_send_command(sock, f"RETR {key}", b'\r\n.\r\n').decode('utf-8')
-        # print(raw_email)
         email_info = D3_parse_mime_email(raw_email, "\r\n")
         if email_info['Attachments'] != []:
             D3_save_attachments(email_info['Attachments'], value['uidl'][0:-4])
@@ -297,8 +293,6 @@ def D3_reload_mails(pop3_server, pop3_port, username, password):
 
         # UIDL: get a list of unique identifiers assigned by the server to each message
         list_UIDL = D3_send_command(sock, "UIDL").decode('utf-8')
-        print(list_UIDL)
-        # if list_UIDL != {}:
         data_1 = D3_uidl_status_read(list_UIDL)
         add_mails = {}
         remove_mails = {}

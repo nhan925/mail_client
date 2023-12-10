@@ -9,7 +9,6 @@ import main
 class Setup(QDialog):
     def __init__(self):
         super(Setup, self).__init__()
-        self.main_windows = None
         uic.loadUi('setup.ui', self)
         self.continue_2.clicked.connect(self.login)
 
