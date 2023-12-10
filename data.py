@@ -16,6 +16,7 @@ trash_dir = 'trash'
 filters = {}
 files_dir = 'downloaded_files'
 mail_status = {}
+check_reset = 0
 
 
 def import_config():

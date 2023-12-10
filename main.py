@@ -1,3 +1,4 @@
+import shutil
 import time
 from PyQt6.QtWidgets import QCommandLinkButton, QListWidgetItem
 from PyQt6.QtGui import QFont, QIcon
@@ -18,25 +19,30 @@ class AutoLoad(QThread):
         self.main_windows = main_windows
 
     def run(self):
-        while True:
+        while not self.isInterruptionRequested():
             time.sleep(data.auto_load_time)
             self.main_windows._reload()
+
+    def stop(self):
+        self.exit()
 
 
 class Main(QMainWindow):
     def __init__(self):
         super().__init__()
+        data.uidl_list_import()
         self.read_mail_windows = None
         self.send_windows = None
         self.filter_windows = None
         self.current_folder = data.inbox_dir
         self.current_endline = '\n\n'
         uic.loadUi('main.ui', self)
+        self.setWindowTitle(f'Mail Client - {data.username}')
         if data.auto_load_time < 10:
             QMessageBox.information(self, 'Warning', 'Autoload time is too low ! Changed to 10s !')
             data.auto_load_time = 10
-        auto_load_thread = AutoLoad(self)
-        auto_load_thread.start()
+        self.auto_load_thread = AutoLoad(self)
+        self.auto_load_thread.start()
         self.create_default_folders()
         self._reload()
         self.load_filters()
@@ -53,6 +59,7 @@ class Main(QMainWindow):
         self.addfilters.clicked.connect(self.add_filter)
         self.deleteall.clicked.connect(self.clean_trash)
         self.filterlist.itemClicked.connect(self.open_filter)
+        self.reset.clicked.connect(self.reset_func)
 
     def create_default_folders(self):
         folders = [data.inbox_dir, data.sent_dir, data.spam_dir, data.trash_dir, data.files_dir]
@@ -189,3 +196,33 @@ class Main(QMainWindow):
                 self.load_mails(self.current_folder, self.current_endline)
             else:
                 return
+
+
+    def reset_func(self):
+        dialog = QMessageBox(self)
+        dialog.setIcon(QMessageBox.Icon.Question)
+        dialog.setText("All data will be reset and the app will be closed, do you want to continue ?")
+        dialog.setWindowTitle("Reset")
+        dialog.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        result = dialog.exec()
+        if result == QMessageBox.StandardButton.Yes:
+            if self.auto_load_thread.isRunning():
+                self.auto_load_thread.stop()
+            shutil.rmtree(data.inbox_dir)
+            shutil.rmtree(data.sent_dir)
+            shutil.rmtree(data.spam_dir)
+            shutil.rmtree(data.trash_dir)
+            shutil.rmtree(data.files_dir)
+            for key in data.filters:
+                if key == 'spam' or key == 'spam1':
+                    continue
+                else:
+                    shutil.rmtree(key)
+            os.remove('list_bytes.json')
+            os.remove('uidl_list.json')
+            shutil.copy('default_config.json', 'config.json')
+            data.check_reset = 1
+            self.close()
+        else:
+            return
+

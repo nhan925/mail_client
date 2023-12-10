@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Main</string>
+   <string>Mail Client</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -347,21 +347,21 @@
      <string>Delete All</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="logout">
+   <widget class="QPushButton" name="reset">
     <property name="geometry">
      <rect>
       <x>18</x>
       <y>598</y>
-      <width>82</width>
+      <width>91</width>
       <height>24</height>
      </rect>
     </property>
     <property name="text">
-     <string> Logout</string>
+     <string> Reset Data</string>
     </property>
     <property name="icon">
      <iconset>
-      <normaloff>icon/logout.png</normaloff>icon/logout.png</iconset>
+      <normaloff>icon/reset.png</normaloff>icon/reset.png</iconset>
     </property>
     <property name="checkable">
      <bool>false</bool>

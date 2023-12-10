@@ -47,7 +47,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>icon/email.png</normaloff>icon/email.png</iconset>
+    <normaloff>icon/settings.png</normaloff>icon/settings.png</iconset>
   </property>
   <property name="sizeGripEnabled">
    <bool>false</bool>
