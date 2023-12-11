@@ -4,7 +4,7 @@
 <div align="center"><a href="https://www.hcmus.edu.vn/"><img src="hcmus-logo.png"></a></div>
 
 ## Instructor
-<p>Chung Thuy Linh</p>
+<p>Chung Thùy Linh</p>
 
 
 ## Contributors
