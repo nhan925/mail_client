@@ -24,7 +24,7 @@ def send_mail(smtp_server, smtp_port, smtp_username, recipient_email, subject, b
               bcc_email):
     recipients = str(recipient_email).replace("'", "").removeprefix('[').removesuffix(']')
     cc_recipients = str(cc_email).replace("'", "").removeprefix('[').removesuffix(']')
-
+    boundary = base64.b64encode((generate_unique_name() + data.username).encode('utf-8')).decode('utf-8')
     # Construct MIME message
     message = f"""\
 From: {smtp_username}
@@ -39,9 +39,9 @@ To: {recipients}
     continue_mes = f"""\
 Subject: {subject}
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="dGhpc19pc190aGVfc2VwYXJhdGVkX3N0cmluZw=="
+Content-Type: multipart/mixed; boundary="{boundary}"
 
---dGhpc19pc190aGVfc2VwYXJhdGVkX3N0cmluZw==
+--{boundary}
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 
@@ -58,7 +58,7 @@ Content-Transfer-Encoding: 7bit
             attachment_name = os.path.basename(attachment_path)
             attachment_content_type = 'application/octet-stream'
             attachment_part = f"""\
---dGhpc19pc190aGVfc2VwYXJhdGVkX3N0cmluZw==
+--{boundary}
 Content-Type: {attachment_content_type}
 MIME-Version: 1.0
 Content-Disposition: attachment; filename="{attachment_name}"
@@ -77,7 +77,7 @@ Content-Transfer-Encoding: base64
             message += attachment_part
             attachment_file.close()
 
-    message += '--dGhpc19pc190aGVfc2VwYXJhdGVkX3N0cmluZw==--'
+    message += f'--{boundary}--'
 
     # Send mail to server
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
@@ -123,6 +123,7 @@ class NewMail(QDialog):
         self.attach.clicked.connect(self._attach)
         self.send.clicked.connect(self._send)
         self.clear.clicked.connect(self._clear_att)
+        self.clear_one.clicked.connect(self._clear_one_att)
 
 
 
@@ -158,10 +159,7 @@ class NewMail(QDialog):
                 return
             self.attached_files.append(selectedfile)
             selectedfile = os.path.basename(selectedfile)
-            if self.attachments.text():
-                selectedfile = ", " + selectedfile
-            self.attachments.setText(
-                self.attachments.text() + selectedfile + ' (' + str(round(attachment_size / 1024, 3)) + ' KB)')
+            self.attachments.addItem(selectedfile + ' (' + str(round(attachment_size / 1024, 3)) + ' KB)')
 
     def _send(self):
         try:
@@ -204,3 +202,11 @@ class NewMail(QDialog):
     def _clear_att(self):
         self.attached_files.clear()
         self.attachments.clear()
+
+
+    def _clear_one_att(self):
+        selected_item = self.attachments.currentItem()
+        if selected_item is not None:
+            row = self.attachments.row(selected_item)
+            self.attachments.takeItem(row)
+            del self.attached_files[row]
