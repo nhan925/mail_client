@@ -280,7 +280,6 @@ def D3_reload_mails(pop3_server, pop3_port, username, password):
         data_1 = D3_uidl_status_read(list_UIDL)
         add_mails = {}
         remove_mails = {}
-
         if not os.path.exists("uidl_list.json"):
             add_mails = data_1
             data.mail_status = data_1

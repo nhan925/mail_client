@@ -70,6 +70,8 @@ class Main(QMainWindow):
     def load_mails(self, folder_path, endline):
         self.contentlist.clear()
         files = os.listdir(folder_path)
+        if not files:
+            return
         email_list = {}
         for filename in files:
             file_path = os.path.join(folder_path, filename)
@@ -125,6 +127,8 @@ class Main(QMainWindow):
     def load_files(self):
         self.contentlist.clear()
         files = os.listdir(data.files_dir)
+        if not files:
+            return
         for file in files:
             item = QListWidgetItem(f"{file}")
             item.setData(1, file)
