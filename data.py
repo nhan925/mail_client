@@ -17,6 +17,7 @@ filters = {}
 files_dir = 'downloaded_files'
 mail_status = {}
 check_reset = 0
+sock_timeout = 3
 
 
 def import_config():

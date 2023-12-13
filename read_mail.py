@@ -254,7 +254,7 @@ def D3_fetch_mail(sock, add_mails):
 
 def D3_reload_mails(pop3_server, pop3_port, username, password):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        sock.settimeout(1)
+        sock.settimeout(data.sock_timeout)
         try:
             sock.connect((pop3_server, pop3_port))
         except:
