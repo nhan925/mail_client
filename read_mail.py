@@ -4,6 +4,7 @@ import json
 import os
 import shutil
 import data
+from plyer import notification
 from PyQt6 import uic
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QDesktopServices
@@ -288,6 +289,8 @@ def D3_reload_mails(pop3_server, pop3_port, username, password):
             add_mails, remove_mails = D3_compare_UIDL(data_1)
         D3_delete_on_server(sock, remove_mails)
         D3_fetch_mail(sock, add_mails)
+        if len(add_mails) != 0:
+            send_notification("New Mail", f"{len(add_mails)} new mails !")
         D3_send_command(sock, 'QUIT')
 
 
@@ -295,3 +298,13 @@ def D3_status_index(email_uidl, data):
     for key, value in data.items():
         if value['uidl'] == email_uidl + ".msg":
             return str(key)
+
+
+def send_notification(title, message):
+    notification.notify(
+        title=title,
+        message=message,
+        timeout=1,  # The notification will disappear after 10 seconds
+        app_name="Mail Client",
+        app_icon="icon/appIcon.ico"
+    )
